@@ -1,0 +1,10 @@
+# Godot
+.godot/
+.export/
+
+# Rust
+target/
+
+# Temporary files
+*.tmp
+*.log

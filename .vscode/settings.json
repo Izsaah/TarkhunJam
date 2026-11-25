@@ -1,0 +1,8 @@
+{
+  "godotTools.lsp.serverPort": 6005,
+  "godotTools.editorPath.godot4": "/home/aves/.local/bin/godot",
+  "rust-analyzer.linkedProjects": [
+    "rust/Cargo.toml"
+  ],
+  "rust-analyzer.check.command": "clippy"
+}
