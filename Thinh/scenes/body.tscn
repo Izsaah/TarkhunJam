@@ -7,11 +7,12 @@ radius = 12.0
 height = 25.0
 
 [node name="Body" type="Area2D" unique_id=1534563833]
-visible = false
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=480872924]
+texture_filter = 1
 texture = ExtResource("1_mjwvf")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=513242053]
+visible = false
 rotation = 1.5707964
 shape = SubResource("CapsuleShape2D_mjwvf")

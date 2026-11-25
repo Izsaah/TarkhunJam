@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://b2fo4xv3nkx0d"]
+
+[ext_resource type="Texture2D" uid="uid://dfa7x0r6071lv" path="res://Thinh/assets/bullet/blue_worm_tail.png" id="1_rawwr"]
+[ext_resource type="Script" uid="uid://b38pe25vaw7sw" path="res://Thinh/scripts/bullets.gd" id="2_knf61"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_oap6a"]
+size = Vector2(24, 12)
+
+[node name="Blue" type="CharacterBody2D" unique_id=1967039530]
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=54766388]
+texture_filter = 1
+texture = ExtResource("1_rawwr")
+script = ExtResource("2_knf61")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=278866861]
+visible = false
+shape = SubResource("RectangleShape2D_oap6a")

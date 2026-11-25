@@ -1,15 +1,22 @@
 [gd_scene format=3 uid="uid://bqkiwagb1cmh7"]
 
-[ext_resource type="PackedScene" uid="uid://bi2a84u273kd8" path="res://Thinh/scenes/player.tscn" id="1_npc"]
 [ext_resource type="Script" uid="uid://cw078tlxxllm3" path="res://Thinh/scripts/npc_spawner.gd" id="2_33jkv"]
+[ext_resource type="PackedScene" uid="uid://hbn3hviy6qxt" path="res://Khoa/scenes/worm_player.tscn" id="3_33jkv"]
 [ext_resource type="PackedScene" uid="uid://hnbcn7wv62bl" path="res://Thinh/scenes/npc_head.tscn" id="3_kwae5"]
+[ext_resource type="Script" uid="uid://dqacbqi551sm7" path="res://Khoa/scripts/food_spawner.gd" id="4_4s6v7"]
+[ext_resource type="PackedScene" uid="uid://cqcirvddtkyh2" path="res://Khoa/scenes/food.tscn" id="5_nmggo"]
 
 [node name="Main" type="Node2D" unique_id=765349513]
 
-[node name="Player" parent="." unique_id=1229851604 groups=["Body", "Tail"] instance=ExtResource("1_npc")]
-position = Vector2(270, 139)
-
-[node name="NpcSpawner" type="Node2D" parent="." unique_id=1772633165 node_paths=PackedStringArray("player_head") groups=["Body", "Tail"]]
+[node name="NpcSpawner" type="Node2D" parent="." unique_id=1772633165 node_paths=PackedStringArray("player_head") groups=["Body", "Head", "Tail"]]
 script = ExtResource("2_33jkv")
 npc_head_scene = ExtResource("3_kwae5")
-player_head = NodePath("../Player")
+player_head = NodePath("../WormPlayer")
+
+[node name="WormPlayer" parent="." unique_id=1987967634 instance=ExtResource("3_33jkv")]
+
+[node name="FoodSpawner" type="Node2D" parent="." unique_id=574248500 node_paths=PackedStringArray("worm")]
+script = ExtResource("4_4s6v7")
+food_scene = ExtResource("5_nmggo")
+worm = NodePath("../WormPlayer")
+max_food_count = 20

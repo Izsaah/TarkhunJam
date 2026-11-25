@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://dcn0u8ucld5dv"]
+
+[ext_resource type="Texture2D" uid="uid://dko3mrl6i71qe" path="res://Thinh/assets/bullet/black_worm_tail.png" id="1_1nl1j"]
+[ext_resource type="Script" uid="uid://b38pe25vaw7sw" path="res://Thinh/scripts/bullets.gd" id="2_key4n"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_oap6a"]
+size = Vector2(24, 12)
+
+[node name="Black" type="CharacterBody2D" unique_id=1967039530]
+script = ExtResource("2_key4n")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=54766388]
+texture = ExtResource("1_1nl1j")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=278866861]
+visible = false
+texture_filter = 1
+shape = SubResource("RectangleShape2D_oap6a")

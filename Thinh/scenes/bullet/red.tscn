@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://dwiiwodeablo7"]
+
+[ext_resource type="Script" uid="uid://b38pe25vaw7sw" path="res://Thinh/scripts/bullets.gd" id="1_xgqfn"]
+[ext_resource type="Texture2D" uid="uid://bil5mh273bx1y" path="res://Thinh/assets/bullet/red_worm_tail.png" id="1_xjy1f"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_oap6a"]
+size = Vector2(24, 12)
+
+[node name="Red" type="CharacterBody2D" unique_id=1967039530]
+script = ExtResource("1_xgqfn")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=54766388]
+texture_filter = 1
+texture = ExtResource("1_xjy1f")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=278866861]
+visible = false
+shape = SubResource("RectangleShape2D_oap6a")
