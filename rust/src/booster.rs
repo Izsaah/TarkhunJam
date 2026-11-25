@@ -6,47 +6,80 @@ use godot::{classes::{CharacterBody2D, INode, Node, class_macros::private::virtu
 use rand::Rng;
 use godot::meta::ToGodot;
 
+use godot::prelude::*;
+use godot::classes::{Area2D, IArea2D};
+
+
 
 #[derive(GodotClass)]
-#[class(base=Node,init)]
-struct Booster{
-_effect: Effect,
-_target: Option<Gd<CharacterBody2D>>,
-
+#[class(base=Area2D)]
+struct Booster {
+    effect: Effect,
+    base: Base<Area2D>,
 }
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 enum Effect {
-#[default]    
-_BLIND,_RELOAD,_SPEED,_SLOW,_IMMORTAL
+    #[default]
+    Blind,
+    Reload,
+    Speed,
+    Slow,
+    Immortal,
 }
+
 #[godot_api]
-impl Booster{
+impl IArea2D for Booster {
+    fn init(base: Base<Area2D>) -> Self {
+        Self {
+            effect: Effect::default(),
+            base,
+        }
+    }
+}
+
+#[godot_api]
+impl Booster {
     #[func]
-    pub fn _apply_effect(&mut self,mut target: Gd<CharacterBody2D>){
-        self._effect=Effect::_random();
-        
-        match self._effect {
-            Effect::_BLIND => {
-                print!("Blind effect applied to {:?}", target);
-            },Effect::_IMMORTAL=>{
-                print!("Immortal effect applied to {:?}", target);
-            },Effect::_RELOAD=>{
-                print!("Reload effect applied to  {:?}",target);
-            },Effect::_SLOW=>{
+    fn apply_effect(&mut self, mut target: Gd<CharacterBody2D>) {
+        self.effect = Effect::random();
+
+        match self.effect {
+            Effect::Blind => {
+                godot_print!("Blind effect applied!");
+            }
+
+            Effect::Immortal => {
+                godot_print!("Immortal effect applied!");
+            }
+
+            Effect::Reload => {
+                godot_print!("Reload effect applied!");
+            }
+
+            Effect::Slow => {
                 let speed = target.get("move_speed").to::<f64>();
-                print!("Slow effect applied to {:?}", target.set("move_speed", &(speed*0.5).to_variant()));
-            },Effect::_SPEED=>{
-                let  speed = target.get("move_speed").to::<f64>();
-                print!("Speed effect applied to {:?}", target.set("move_speed", &(speed*1.5).to_variant()));
+                target.set("move_speed", &(speed * 0.5).to_variant());
+            }
+
+            Effect::Speed => {
+                let speed = target.get("move_speed").to::<f64>();
+                target.set("move_speed", &(speed * 1.5).to_variant());
             }
         }
     }
 }
-impl Effect{
-    fn _random()-> Self{
-        let number=rand::thread_rng().gen_range(0..5);
-        let effect=[Effect::_BLIND,Effect::_RELOAD,Effect::_SPEED,Effect::_SLOW,Effect::_IMMORTAL];
-        effect[number]
-    }    
-}
 
+impl Effect {
+    fn random() -> Self {
+        let number = rand::thread_rng().gen_range(0..5);
+
+        [
+            Effect::Blind,
+            Effect::Reload,
+            Effect::Speed,
+            Effect::Slow,
+            Effect::Immortal,
+        ][number]
+    }
+}
