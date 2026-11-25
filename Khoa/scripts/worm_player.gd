@@ -1,14 +1,31 @@
 extends CharacterBody2D
 signal size_changed(new_size: int)
+signal self_collided(segment_index: int)
+signal health_changed(current_health: int, max_health: int)
+signal died(reason: String)
 
-# biến di chuyển
+# tự va chạm
+@export var self_collision_enabled: bool = true
+@export var safe_segments: int = 2
+@export var self_collision_distance: float = 22.0
+
+var is_dead: bool = false
+
 @export var move_speed: float = 140.0
-@export var turn_smoothing: float = 14.0
+@export var min_turn_radius: float = 80.0
+@export var mouse_dead_zone: float = 8.0
+
+var move_direction: Vector2 = Vector2.RIGHT
 
 # biến thân giun
 @export var segment_count: int = 5
 @export var segment_spacing: float = 18.0
 @export var history_step: float = 2.0
+
+# máu
+@export var max_health: int = 100
+
+var current_health: int = 100
 
 # xài thân giun bên scene worm_segment.tscn
 const BODY_SEGMENT_SCENE: PackedScene = preload(
@@ -18,6 +35,7 @@ const BODY_SEGMENT_SCENE: PackedScene = preload(
 @onready var head_pivot: Node2D = $HeadPivot
 @onready var body_container: Node2D = $BodySegments
 @onready var tail_pivot: Node2D = $TailPivot
+@onready var weapon_muzzle: Marker2D = $HeadPivot/WeaponMuzzle
 
 var body_parts: Array[Node2D] = []
 var path_history: Array[Vector2] = []
@@ -40,47 +58,57 @@ func _ready() -> void:
 
 	_update_body_positions()
 
+	current_health = maxi(1, max_health)
+	health_changed.emit(current_health, max_health)
+
 
 func _physics_process(delta: float) -> void:
-	var direction := _get_input_direction()
+	if is_dead:
+		velocity = Vector2.ZERO
+		return
 
-	# di chuyển đầu giun
-	velocity = direction * move_speed
+	_update_move_direction(delta)
+
+	velocity = move_direction * move_speed
+
+	head_pivot.global_rotation = move_direction.angle()
+
 	move_and_slide()
 
-	# xoay đầu
-	if direction != Vector2.ZERO:
-		var target_angle := direction.angle()
-
-		head_pivot.rotation = lerp_angle(
-			head_pivot.rotation,
-			target_angle,
-			1.0 - exp(-turn_smoothing * delta)
-		)
-
-	# lưu lại di chuyển của đầu
 	_record_path()
 
-	# cập nhật vị trí thân giun và đuôi
 	_update_body_positions()
 
+	_check_self_collision()
 
-func _get_input_direction() -> Vector2:
-	var direction := Vector2.ZERO
 
-	if Input.is_physical_key_pressed(KEY_A) or Input.is_key_pressed(KEY_LEFT):
-		direction.x -= 1.0
+func _update_move_direction(delta: float) -> void:
+	var mouse_vector := get_global_mouse_position() - global_position
 
-	if Input.is_physical_key_pressed(KEY_D) or Input.is_key_pressed(KEY_RIGHT):
-		direction.x += 1.0
+	if mouse_vector.length_squared() <= mouse_dead_zone * mouse_dead_zone:
+		return
 
-	if Input.is_physical_key_pressed(KEY_W) or Input.is_key_pressed(KEY_UP):
-		direction.y -= 1.0
+	var target_angle := mouse_vector.angle()
+	var current_angle := move_direction.angle()
 
-	if Input.is_physical_key_pressed(KEY_S) or Input.is_key_pressed(KEY_DOWN):
-		direction.y += 1.0
+	var angle_difference := wrapf(
+		target_angle - current_angle,
+		-PI,
+		PI
+	)
 
-	return direction.normalized()
+	var safe_radius := maxf(min_turn_radius, 1.0)
+	var max_angle_change := (move_speed / safe_radius) * delta
+
+	var angle_change := clampf(
+		angle_difference,
+		-max_angle_change,
+		max_angle_change
+	)
+
+	move_direction = move_direction.rotated(
+		angle_change
+	).normalized()
 
 
 func _record_path() -> void:
@@ -177,6 +205,107 @@ func grow_worm(amount: int = 1) -> void:
 	_update_body_positions()
 
 	size_changed.emit(body_parts.size())
+
+func _check_self_collision() -> void:
+	if not self_collision_enabled or is_dead:
+		return
+
+	if body_parts.size() <= safe_segments:
+		return
+
+	var head_position: Vector2 = head_pivot.global_position
+
+	for i in range(safe_segments, body_parts.size()):
+		var segment: Node2D = body_parts[i]
+
+		if not is_instance_valid(segment):
+			continue
+
+		var distance := head_position.distance_to(
+			segment.global_position
+		)
+
+		if distance <= self_collision_distance:
+			_handle_self_collision(i)
+			return
+
+	if is_instance_valid(tail_pivot):
+		var tail_distance := head_position.distance_to(
+			tail_pivot.global_position
+		)
+
+		if tail_distance <= self_collision_distance:
+			_handle_self_collision(-1)
+
+func _handle_self_collision(segment_index: int) -> void:
+	if is_dead:
+		return
+
+	print("WORM SELF COLLISION!")
+	print("Hit segment index: ", segment_index)
+
+	self_collided.emit(segment_index)
+
+	_die("self_collision")
+
+func _unhandled_input(event: InputEvent) -> void:
+	if is_dead:
+		return
+
+	if event is InputEventMouseButton:
+		if event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
+			weapon_muzzle.call(
+				"shoot_towards",
+				get_global_mouse_position()
+			)
+
+func take_damage(
+	amount: int,
+	instant_kill: bool = false,
+	source: Node = null
+) -> void:
+
+	if is_dead:
+		return
+
+	if instant_kill:
+		current_health = 0
+	else:
+		current_health = maxi(
+			0,
+			current_health - maxi(0, amount)
+		)
+
+	print(
+		"Damage received: ",
+		amount,
+		" | Health: ",
+		current_health,
+		"/",
+		max_health
+	)
+
+	if is_instance_valid(source):
+		print("Damage source: ", source.name)
+
+	if current_health <= 0:
+		_die("bullet")
+	else:
+		health_changed.emit(current_health, max_health)
+
+func _die(reason: String) -> void:
+	if is_dead:
+		return
+
+	is_dead = true
+	velocity = Vector2.ZERO
+	current_health = 0
+
+	health_changed.emit(current_health, max_health)
+
+	print("WORM DIED: ", reason)
+
+	died.emit(reason)
 
 # hàm test chức năng tăng chiều dài
 # func _input(event: InputEvent) -> void:

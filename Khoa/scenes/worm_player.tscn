@@ -3,6 +3,8 @@
 [ext_resource type="Texture2D" uid="uid://dq4pqwblr1vea" path="res://Khoa/assets/worms/red/red_worm_head.png" id="1_j7d7w"]
 [ext_resource type="Script" uid="uid://c4kd64hmg1f6v" path="res://Khoa/scripts/worm_player.gd" id="1_rpjye"]
 [ext_resource type="Texture2D" uid="uid://f1x4ksfrmyln" path="res://Khoa/assets/worms/red/red_worm_tail.png" id="2_rpjye"]
+[ext_resource type="Script" uid="uid://bmpy636a0anas" path="res://Khoa/scripts/worm_weapon.gd" id="3_loawe"]
+[ext_resource type="PackedScene" uid="uid://ou82yqbqjogu" path="res://Khoa/scenes/bullet.tscn" id="4_sb657"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_vksrd"]
 radius = 11.0
@@ -15,6 +17,11 @@ script = ExtResource("1_rpjye")
 [node name="HeadSprite" type="Sprite2D" parent="HeadPivot" unique_id=1978202132]
 texture_filter = 1
 texture = ExtResource("1_j7d7w")
+
+[node name="WeaponMuzzle" type="Marker2D" parent="HeadPivot" unique_id=1384936324]
+position = Vector2(18, 0)
+script = ExtResource("3_loawe")
+bullet_scene = ExtResource("4_sb657")
 
 [node name="BodySegments" type="Node2D" parent="." unique_id=1141563593]
 

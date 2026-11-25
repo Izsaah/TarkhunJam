@@ -8,6 +8,7 @@
 
 [node name="WormPlayer" parent="." unique_id=1987967634 instance=ExtResource("1_g5qra")]
 position = Vector2(250, 250)
+min_turn_radius = 20.0
 
 [node name="FoodSpawner" type="Node2D" parent="." unique_id=1297127542 node_paths=PackedStringArray("worm")]
 script = ExtResource("2_g5qra")

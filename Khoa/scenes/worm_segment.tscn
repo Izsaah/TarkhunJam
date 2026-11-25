@@ -2,6 +2,16 @@
 
 [ext_resource type="Texture2D" uid="uid://dnp02c010cmma" path="res://Khoa/assets/worms/red/red_worm_body.png" id="1_bcgfe"]
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_bcgfe"]
+radius = 11.0
+
 [node name="WormSegment" type="Sprite2D" unique_id=1229115335]
 texture_filter = 1
 texture = ExtResource("1_bcgfe")
+
+[node name="Hitbox" type="Area2D" parent="." unique_id=1550321801]
+collision_mask = 0
+monitoring = false
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hitbox" unique_id=817721556]
+shape = SubResource("CircleShape2D_bcgfe")
