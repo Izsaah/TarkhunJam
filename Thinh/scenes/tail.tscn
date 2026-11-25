@@ -11,4 +11,5 @@ size = Vector2(26, 16)
 texture = ExtResource("1_y8olm")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1002640358]
+visible = false
 shape = SubResource("RectangleShape2D_7u0ma")
