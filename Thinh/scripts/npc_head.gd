@@ -4,6 +4,23 @@ const _bodyPartScene = preload("res://Thinh/scenes/body.tscn")
 const _tailPartScene = preload("res://Thinh/scenes/tail.tscn")
 const _bodyDistance: int = 5
 
+# 7 Bullet types
+const BULLET_SCENES = [
+	preload("res://Thinh/scenes/bullet/black.tscn"),
+	preload("res://Thinh/scenes/bullet/white.tscn"),
+	preload("res://Thinh/scenes/bullet/blue.tscn"),
+	preload("res://Thinh/scenes/bullet/green.tscn"),
+	preload("res://Thinh/scenes/bullet/red.tscn"),
+	preload("res://Thinh/scenes/bullet/yellow.tscn"),
+	preload("res://Thinh/scenes/bullet/orange.tscn")
+]
+
+# Shooting Settings
+@export var shoot_interval_min: float = 1.8
+@export var shoot_interval_max: float = 3.5
+@export var shoot_range: float = 600.0
+@export var one_shot_chance: float = 0.10 # 10/90 chance (10% one-shot)
+
 # Body Settings
 @export var min_body_parts: int = 6
 @export var max_body_parts: int = 20
@@ -32,11 +49,13 @@ var _current_speed: float = base_speed
 var _last_player_pos: Vector2 = Vector2.ZERO
 var _player_velocity: Vector2 = Vector2.ZERO
 var _is_dead: bool = false
+var _shoot_timer: float = 0.0
 
 func _ready():
 	_find_player()
 	_setup_eat_area()
 
+	_shoot_timer = randf_range(shoot_interval_min, shoot_interval_max)
 	_bodyPartCount = randi_range(min_body_parts, max_body_parts)
 	_movementHistory = (_bodyPartCount + 2) * _bodyDistance
 
@@ -58,8 +77,13 @@ func _physics_process(delta):
 		if not is_instance_valid(player_head):
 			return
 
+	# 1. AI Movement
 	_move_ai(delta)
 
+	# 2. Shooting
+	_process_shooting(delta)
+
+	# 3. Record trail & update body parts
 	_positionsHistory.push_back({pos = global_position, rot = rotation})
 	if _positionsHistory.size() > _movementHistory:
 		_positionsHistory.pop_front()
@@ -67,13 +91,39 @@ func _physics_process(delta):
 
 	_check_all_collisions()
 
+# --- SHOOTING LOGIC ---
+
+func _process_shooting(delta: float):
+	_shoot_timer -= delta
+	if _shoot_timer <= 0.0:
+		_shoot_timer = randf_range(shoot_interval_min, shoot_interval_max)
+		if global_position.distance_to(player_head.global_position) <= shoot_range:
+			_fire_bullet()
+
+func _fire_bullet():
+	# Pick 1 of 7 bullets randomly
+	var bullet_scene: PackedScene = BULLET_SCENES.pick_random()
+	var bullet = bullet_scene.instantiate()
+
+	# 10% chance to one-shot
+	var is_fatal: bool = randf() < one_shot_chance
+	bullet.set("is_one_shot", is_fatal)
+
+	# Spawn in front of the head and aim towards the player
+	var shoot_dir = (player_head.global_position - global_position).normalized()
+	bullet.global_position = global_position + shoot_dir * 28.0
+	bullet.global_rotation = shoot_dir.angle()
+
+	# Add to main scene root so bullet travels freely
+	get_tree().current_scene.add_child(bullet)
+
 # --- EATING & GROWING ---
 
 func _setup_eat_area():
 	var eat_area = Area2D.new()
 	eat_area.name = "EatDetector"
 	eat_area.collision_layer = 0
-	eat_area.collision_mask = 2 # Matches Food's collision_layer = 2
+	eat_area.collision_mask = 2
 	
 	var shape = CollisionShape2D.new()
 	var circle = CircleShape2D.new()
@@ -104,7 +154,6 @@ func grow(amount: int = 1):
 		bodyPart.visible = true
 		add_child(bodyPart)
 
-		# Insert between the tail (index 0) and the rest of the body
 		if _bodyParts.size() > 0:
 			_bodyParts.insert(1, bodyPart)
 		else:
@@ -113,7 +162,6 @@ func grow(amount: int = 1):
 		bodyPart.scale = Vector2(1, _scaleY)
 		_scaleY = min(_scaleY + 0.01, 1.0)
 
-# Alias in case food.gd calls grow_worm on the body that hits it
 func grow_worm(amount: int = 1):
 	grow(amount)
 
@@ -125,13 +173,13 @@ func _check_all_collisions():
 
 	var dist_to_player_head = global_position.distance_to(player_head.global_position)
 
-	# 1. Head-to-Head: Both die
+	# Head-to-Head: Both die
 	if dist_to_player_head <= HEAD_COLLISION_RADIUS:
 		_kill_player()
 		die()
 		return
 
-	# 2. NPC Head hits Player Body or Tail: NPC dies
+	# NPC Head hits Player Body/Tail: NPC dies
 	if "body_parts" in player_head:
 		for part in player_head.body_parts:
 			if is_instance_valid(part) and global_position.distance_to(part.global_position) <= BODY_COLLISION_RADIUS:
@@ -144,7 +192,7 @@ func _check_all_collisions():
 			die()
 			return
 
-	# 3. Player Head hits NPC Body or Tail: Player dies
+	# Player Head hits NPC Body/Tail: Player dies
 	for part in _bodyParts:
 		if is_instance_valid(part) and player_head.global_position.distance_to(part.global_position) <= BODY_COLLISION_RADIUS:
 			_kill_player()

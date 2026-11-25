@@ -12,7 +12,6 @@
 script = ExtResource("2_33jkv")
 npc_head_scene = ExtResource("3_kwae5")
 player_head = NodePath("../WormPlayer")
-npc_count = 50
 
 [node name="WormPlayer" parent="." unique_id=1987967634 instance=ExtResource("3_33jkv")]
 
@@ -20,3 +19,4 @@ npc_count = 50
 script = ExtResource("4_4s6v7")
 food_scene = ExtResource("5_nmggo")
 worm = NodePath("../WormPlayer")
+max_food_count = 20

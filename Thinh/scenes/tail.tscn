@@ -8,6 +8,7 @@ size = Vector2(26, 16)
 [node name="Tail" type="Area2D" unique_id=1927930692]
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1818661016]
+texture_filter = 1
 texture = ExtResource("1_y8olm")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1002640358]
