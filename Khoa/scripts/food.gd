@@ -1,5 +1,7 @@
 extends Area2D
 
+signal eaten(food: Area2D)
+
 @export var growth_amount: int = 1
 
 var consumed: bool = false
@@ -20,7 +22,7 @@ func _on_body_entered(body: Node2D) -> void:
 
 	body.call("grow_worm", growth_amount)
 
+	eaten.emit(self)
 	print("Food consumed!")
-	print("Growth amount: ", growth_amount)
 
 	queue_free()
