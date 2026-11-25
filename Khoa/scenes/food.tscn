@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://cqcirvddtkyh2"]
+
+[ext_resource type="Texture2D" uid="uid://rfacaeehh0a" path="res://Khoa/assets/food/food.png" id="1_lj4ia"]
+[ext_resource type="Script" uid="uid://blfu8ab8tf5dr" path="res://Khoa/scripts/food.gd" id="1_otgd5"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_wta4p"]
+radius = 45.122055
+
+[node name="Food" type="Area2D" unique_id=209556909]
+collision_layer = 2
+script = ExtResource("1_otgd5")
+
+[node name="FoodSprite" type="Sprite2D" parent="." unique_id=775621414]
+texture_filter = 1
+texture = ExtResource("1_lj4ia")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1101170450]
+shape = SubResource("CircleShape2D_wta4p")

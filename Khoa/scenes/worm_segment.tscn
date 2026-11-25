@@ -1,0 +1,7 @@
+[gd_scene format=3 uid="uid://cilw5amwu6rot"]
+
+[ext_resource type="Texture2D" uid="uid://dnp02c010cmma" path="res://Khoa/assets/worms/red/red_worm_body.png" id="1_bcgfe"]
+
+[node name="WormSegment" type="Sprite2D" unique_id=1229115335]
+texture_filter = 1
+texture = ExtResource("1_bcgfe")
