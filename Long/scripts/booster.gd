@@ -1,7 +1,7 @@
-extends Area2D
-
-
-
-
+extends Booster
+func _ready() -> void:
+	body_entered.connect(_on_body_entered)
 func _on_body_entered(body: Node2D) -> void:
-	print("On Enter remove the object and give random boost")
+	if body is CharacterBody2D:
+		apply_effect(body)
+		queue_free()
