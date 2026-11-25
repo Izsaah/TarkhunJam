@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://csxbrvlml7xct"]
+
+[ext_resource type="Script" uid="uid://d3vb5m8ujth56" path="res://Thinh/scripts/head.gd" id="1_bmn01"]
+[ext_resource type="Texture2D" uid="uid://dkpopde4ix2ee" path="res://Thinh/assets/black_worm_head.png" id="1_tlwnx"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_oap6a"]
+radius = 12.0
+
+[node name="Head" type="CharacterBody2D" unique_id=19666922 groups=["Body"]]
+script = ExtResource("1_bmn01")
+
+[node name="Head" type="Sprite2D" parent="." unique_id=1278757911]
+texture = ExtResource("1_tlwnx")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=2066172280]
+position = Vector2(-2, 1)
+shape = SubResource("CircleShape2D_oap6a")
