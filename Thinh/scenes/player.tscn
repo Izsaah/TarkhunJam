@@ -1,0 +1,13 @@
+[gd_scene format=3 uid="uid://bi2a84u273kd8"]
+
+[ext_resource type="Script" uid="uid://cjgmqgso1u2o0" path="res://Thinh/scripts/player.gd" id="1_npcgd"]
+[ext_resource type="PackedScene" uid="uid://csxbrvlml7xct" path="res://Thinh/scenes/head.tscn" id="2_head"]
+
+[node name="Player" type="Node2D" unique_id=683463089]
+script = ExtResource("1_npcgd")
+
+[node name="BodyPartContainer" type="Node2D" parent="." unique_id=562502061]
+unique_name_in_owner = true
+
+[node name="Head" parent="." unique_id=1692865767 instance=ExtResource("2_head")]
+unique_name_in_owner = true

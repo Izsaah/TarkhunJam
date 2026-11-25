@@ -1,0 +1,15 @@
+[gd_scene format=3 uid="uid://bqkiwagb1cmh7"]
+
+[ext_resource type="PackedScene" uid="uid://bi2a84u273kd8" path="res://Thinh/scenes/player.tscn" id="1_npc"]
+[ext_resource type="Script" uid="uid://cw078tlxxllm3" path="res://Thinh/scripts/npc_spawner.gd" id="2_33jkv"]
+[ext_resource type="PackedScene" uid="uid://hnbcn7wv62bl" path="res://Thinh/scenes/npc_head.tscn" id="3_kwae5"]
+
+[node name="Main" type="Node2D" unique_id=765349513]
+
+[node name="Player" parent="." unique_id=1229851604 groups=["Body", "Tail"] instance=ExtResource("1_npc")]
+position = Vector2(270, 139)
+
+[node name="NpcSpawner" type="Node2D" parent="." unique_id=1772633165 node_paths=PackedStringArray("player_head") groups=["Body", "Tail"]]
+script = ExtResource("2_33jkv")
+npc_head_scene = ExtResource("3_kwae5")
+player_head = NodePath("../Player")
