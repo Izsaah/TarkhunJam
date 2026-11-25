@@ -1,24 +1,8 @@
-use godot::prelude::*;
+use godot::{classes::gdextension, prelude::*};
 
 struct MyExtension;
 
 #[gdextension]
-unsafe impl ExtensionLibrary for MyExtension {}
-
-#[derive(GodotClass)]
-#[class(base=Node)]
-pub struct RustPlayer {
-    node: Base<Node>,
+unsafe  impl ExtensionLibrary for MyExtension{
 }
-
-#[godot_api]
-impl INode for RustPlayer {
-    fn init(node: Base<Node>) -> Self {
-        godot_print!("RustPlayer initialized from Rust via GDExtension!");
-        Self { node }
-    }
-
-    fn ready(&mut self) {
-        godot_print!("RustPlayer is ready!");
-    }
-}
+mod booster;
