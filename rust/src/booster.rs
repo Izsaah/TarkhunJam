@@ -1,15 +1,14 @@
-
-
 use std::default;
 
-use godot::{classes::{CharacterBody2D, INode, Node, class_macros::private::virtuals::Xrvrs::Gd}, register::{GodotClass, godot_api}};
-use rand::Rng;
 use godot::meta::ToGodot;
+use godot::{
+    classes::{class_macros::private::virtuals::Xrvrs::Gd, CharacterBody2D, INode, Node},
+    register::{godot_api, GodotClass},
+};
+use rand::Rng;
 
-use godot::prelude::*;
 use godot::classes::{Area2D, IArea2D};
-
-
+use godot::prelude::*;
 
 #[derive(GodotClass)]
 #[class(base=Area2D)]
