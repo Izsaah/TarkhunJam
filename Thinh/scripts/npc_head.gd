@@ -136,7 +136,7 @@ func _setup_eat_area():
 
 func _on_food_touched(area: Area2D):
 	if area.collision_layer & 2 or "food" in area.name.to_lower():
-		grow(1)
+		grow.call_deferred(1)
 		if area.has_method("consume"):
 			area.consume()
 		elif area.has_method("collect"):
@@ -163,7 +163,7 @@ func grow(amount: int = 1):
 		_scaleY = min(_scaleY + 0.01, 1.0)
 
 func grow_worm(amount: int = 1):
-	grow(amount)
+	grow.call_deferred(amount)
 
 # --- COLLISION LOGIC ---
 

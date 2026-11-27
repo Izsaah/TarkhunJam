@@ -12,6 +12,7 @@
 script = ExtResource("2_33jkv")
 npc_head_scene = ExtResource("3_kwae5")
 player_head = NodePath("../WormPlayer")
+npc_count = 2
 
 [node name="WormPlayer" parent="." unique_id=1987967634 instance=ExtResource("3_33jkv")]
 
