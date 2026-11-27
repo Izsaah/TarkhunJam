@@ -10,16 +10,16 @@
 
 [node name="Main" type="Node2D" unique_id=765349513]
 
-[node name="NpcSpawner" type="Node2D" parent="." unique_id=1772633165 node_paths=PackedStringArray("player_head") groups=["Body", "Head", "Tail"]]
+[node name="NpcSpawner" type="Node2D" parent="." unique_id=1772633165 node_paths=PackedStringArray("player_head", "match_timer_ui") groups=["Body", "Head", "Tail"]]
 script = ExtResource("2_33jkv")
 npc_head_scene = ExtResource("3_kwae5")
 player_head = NodePath("../WormPlayer")
-npc_count = 2
-spawn_area_size = Vector2(1152, 2000)
+match_timer_ui = NodePath("../HUD/MatchTimerUI")
+spawn_area_size = Vector2(1152, 648)
 
 [node name="WormPlayer" parent="." unique_id=1987967634 instance=ExtResource("3_33jkv")]
-move_speed = 100.0
-min_turn_radius = 40.0
+move_speed = 200.0
+min_turn_radius = 20.0
 
 [node name="FoodSpawner" type="Node2D" parent="." unique_id=574248500 node_paths=PackedStringArray("worm")]
 script = ExtResource("4_4s6v7")
