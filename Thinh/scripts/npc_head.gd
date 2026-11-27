@@ -19,7 +19,7 @@ const BULLET_SCENES = [
 @export var shoot_interval_min: float = 1.8
 @export var shoot_interval_max: float = 3.5
 @export var shoot_range: float = 600.0
-@export var one_shot_chance: float = 0.10 # 10/90 chance (10% one-shot)
+@export var one_shot_chance: float = 0.01
 
 # Body Settings
 @export var min_body_parts: int = 6
