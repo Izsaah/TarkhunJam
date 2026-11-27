@@ -1,0 +1,21 @@
+[gd_scene format=3 uid="uid://ct0ct87fidfj6"]
+
+[ext_resource type="PackedScene" uid="uid://hbn3hviy6qxt" path="res://Khoa/scenes/worm_player.tscn" id="1_sf5ql"]
+[ext_resource type="Script" uid="uid://dqacbqi551sm7" path="res://Khoa/scripts/food_spawner.gd" id="2_h4q4c"]
+[ext_resource type="PackedScene" uid="uid://cqcirvddtkyh2" path="res://Khoa/scenes/food.tscn" id="3_j1sx7"]
+[ext_resource type="PackedScene" uid="uid://fvyxqwtvfjl3" path="res://Long/scenes/booster.tscn" id="4_4e7ws"]
+
+[node name="WormTest" type="Node2D" unique_id=575522933]
+
+[node name="WormPlayer" parent="." unique_id=1987967634 instance=ExtResource("1_sf5ql")]
+position = Vector2(250, 250)
+min_turn_radius = 20.0
+
+[node name="FoodSpawner" type="Node2D" parent="." unique_id=1297127542 node_paths=PackedStringArray("worm")]
+script = ExtResource("2_h4q4c")
+food_scene = ExtResource("3_j1sx7")
+worm = NodePath("../WormPlayer")
+
+[node name="BoosterSpawner" type="BoosterSpawner" parent="." unique_id=1471774190 node_paths=PackedStringArray("player")]
+booster_scene = ExtResource("4_4e7ws")
+player = NodePath("../WormPlayer")
