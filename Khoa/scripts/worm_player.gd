@@ -1,7 +1,6 @@
 extends CharacterBody2D
 signal size_changed(new_size: int)
 signal self_collided(segment_index: int)
-signal health_changed(current_health: int, max_health: int)
 signal died(reason: String)
 
 @export var shoot_cooldown: float = 1.5
@@ -24,11 +23,6 @@ var move_direction: Vector2 = Vector2.RIGHT
 @export var segment_count: int = 5
 @export var segment_spacing: float = 18.0
 @export var history_step: float = 2.0
-
-# máu
-@export var max_health: int = 100
-
-var current_health: int = 100
 
 # xài thân giun bên scene worm_segment.tscn
 const BODY_SEGMENT_SCENE: PackedScene = preload(
@@ -60,9 +54,6 @@ func _ready() -> void:
 		path_history.append(point)
 
 	_update_body_positions()
-
-	current_health = maxi(1, max_health)
-	health_changed.emit(current_health, max_health)
 
 
 func _physics_process(delta: float) -> void:
@@ -269,38 +260,34 @@ func _unhandled_input(event: InputEvent) -> void:
 				cooldown_ui.start_cooldown(shoot_cooldown)
 
 func take_damage(
-	amount: int,
+	amount: int = 0,
 	instant_kill: bool = false,
-	source: Node = null
+	_source: Node = null
 ) -> void:
-
 	if is_dead:
 		return
 
-	if instant_kill:
-		current_health = 0
-	else:
-		current_health = maxi(
-			0,
-			current_health - maxi(0, amount)
-		)
+	if body_parts.is_empty():
+		_die("bullet")
+		return
 
-	print(
-		"Damage received: ",
-		amount,
-		" | Health: ",
-		current_health,
-		"/",
-		max_health
+	var segments_to_remove := body_parts.size() if instant_kill else mini(
+		body_parts.size(),
+		maxi(0, amount)
 	)
 
-	if is_instance_valid(source):
-		print("Damage source: ", source.name)
+	for i in range(segments_to_remove):
+		var last_segment: Node2D = body_parts.pop_back()
+		last_segment.queue_free()
 
-	if current_health <= 0:
+	if segments_to_remove == 0:
+		return
+
+	_update_body_positions()
+	size_changed.emit(body_parts.size())
+
+	if body_parts.is_empty():
 		_die("bullet")
-	else:
-		health_changed.emit(current_health, max_health)
 
 func _die(reason: String) -> void:
 	if is_dead:
@@ -308,9 +295,6 @@ func _die(reason: String) -> void:
 
 	is_dead = true
 	velocity = Vector2.ZERO
-	current_health = 0
-
-	health_changed.emit(current_health, max_health)
 
 	print("WORM DIED: ", reason)
 

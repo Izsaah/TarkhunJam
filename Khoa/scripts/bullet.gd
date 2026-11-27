@@ -2,28 +2,28 @@ extends Area2D
 
 var direction: Vector2 = Vector2.RIGHT
 var bullet_speed: float = 500.0
-var damage: int = 20
-var insta_kill: bool = false
-var source_actor: Node = null
+var bullet_damage: int = 1
+var bullet_instakill: bool = false
+var shooter: Node = null
 
-var remaining_lifetime: float = 2.5
+var lifetime_remaining: float = 2.5
 var has_hit: bool = false
 
 
 func setup(
 	shoot_direction: Vector2,
 	speed: float,
-	bullet_damage: int,
-	bullet_insta_kill: bool,
-	shooter: Node,
-	lifetime: float
+	damage: int,
+	instakill: bool,
+	actor: Node,
+	projectile_lifetime: float
 ) -> void:
 	direction = shoot_direction.normalized()
 	bullet_speed = speed
-	damage = maxi(0, bullet_damage)
-	insta_kill = bullet_insta_kill
-	source_actor = shooter
-	remaining_lifetime = lifetime
+	bullet_damage = maxi(0, damage)
+	bullet_instakill = instakill
+	shooter = actor
+	lifetime_remaining = projectile_lifetime
 
 
 func _ready() -> void:
@@ -45,9 +45,9 @@ func _physics_process(delta: float) -> void:
 
 	global_position += direction * bullet_speed * delta
 
-	remaining_lifetime -= delta
+	lifetime_remaining -= delta
 
-	if remaining_lifetime <= 0.0:
+	if lifetime_remaining <= 0.0:
 		queue_free()
 
 
@@ -83,9 +83,9 @@ func _apply_damage(hit_object: Node) -> void:
 
 	target.call(
 		"take_damage",
-		damage,
-		insta_kill,
-		source_actor
+		bullet_damage,
+		bullet_instakill,
+		shooter
 	)
 
 	print("Projectile hit: ", target.name)
