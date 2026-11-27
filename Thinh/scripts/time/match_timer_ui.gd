@@ -8,6 +8,7 @@ extends Control
 @onready var restart_button: Button = $ResultPanel/VBoxContainer/RestartButton
 
 func _ready() -> void:
+	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	result_panel.visible = false
 	restart_button.pressed.connect(_on_restart_pressed)
 

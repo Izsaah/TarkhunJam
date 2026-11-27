@@ -24,7 +24,7 @@ const BULLET_SCENES = [
 
 # Body Settings
 @export var min_body_parts: int = 6
-@export var max_body_parts: int = 20
+@export var max_body_parts: int = 30
 
 # AI Configuration
 @export var player_head: CharacterBody2D = null
@@ -360,6 +360,29 @@ func _get_cutoff_position() -> Vector2:
 		side = 1.0
 
 	return intercept_point + player_dir.orthogonal() * (-side * 50.0)
+
+# func take_damage(_amount: int, instant_kill: bool = false, source: Node = null) -> void:
+# 	if _is_dead or source == self:
+# 		return
+
+# 	if instant_kill:
+# 		die()
+# 		return
+
+# 	_remove_body_part()
+
+# func _remove_body_part() -> void:
+# 	# Index 0 is the tail; if only the tail (or nothing) is left, the NPC dies
+# 	if _bodyParts.size() <= 1:
+# 		die()
+# 		return
+
+# 	var removed_part = _bodyParts.pop_back()
+# 	if is_instance_valid(removed_part):
+# 		removed_part.queue_free()
+
+# 	_bodyPartCount = maxi(1, _bodyPartCount - 1)
+# 	_movementHistory = (_bodyPartCount + 2) * _bodyDistance
 
 func _get_avoidance_direction() -> Vector2:
 	var space_state = get_world_2d().direct_space_state
