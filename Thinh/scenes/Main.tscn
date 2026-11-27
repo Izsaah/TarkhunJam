@@ -5,6 +5,8 @@
 [ext_resource type="PackedScene" uid="uid://hnbcn7wv62bl" path="res://Thinh/scenes/npc_head.tscn" id="3_kwae5"]
 [ext_resource type="Script" uid="uid://dqacbqi551sm7" path="res://Khoa/scripts/food_spawner.gd" id="4_4s6v7"]
 [ext_resource type="PackedScene" uid="uid://cqcirvddtkyh2" path="res://Khoa/scenes/food.tscn" id="5_nmggo"]
+[ext_resource type="Script" uid="uid://dly07iqrtpx8r" path="res://Thinh/scripts/time/cooldown_ui.gd" id="6_nmggo"]
+[ext_resource type="Script" uid="uid://yk2hu5cexr7" path="res://Thinh/scripts/time/match_timer_ui.gd" id="7_arp6w"]
 
 [node name="Main" type="Node2D" unique_id=765349513]
 
@@ -13,6 +15,7 @@ script = ExtResource("2_33jkv")
 npc_head_scene = ExtResource("3_kwae5")
 player_head = NodePath("../WormPlayer")
 npc_count = 2
+spawn_area_size = Vector2(1152, 2000)
 
 [node name="WormPlayer" parent="." unique_id=1987967634 instance=ExtResource("3_33jkv")]
 move_speed = 100.0
@@ -23,3 +26,108 @@ script = ExtResource("4_4s6v7")
 food_scene = ExtResource("5_nmggo")
 worm = NodePath("../WormPlayer")
 max_food_count = 20
+
+[node name="HUD" type="CanvasLayer" parent="." unique_id=1375759644]
+
+[node name="CooldownUI" type="Control" parent="HUD" unique_id=1732653163]
+layout_mode = 3
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -80.0
+offset_top = -24.0
+offset_right = 80.0
+grow_horizontal = 2
+grow_vertical = 0
+script = ExtResource("6_nmggo")
+
+[node name="ProgressBar" type="ProgressBar" parent="HUD/CooldownUI" unique_id=1049351333]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -2.0
+offset_top = -27.0
+offset_right = 2.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="CooldownLabel" type="Label" parent="HUD/CooldownUI" unique_id=1623848861]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -20.0
+offset_top = -23.0
+offset_right = 20.0
+grow_horizontal = 2
+grow_vertical = 0
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="CooldownTimer" type="Timer" parent="HUD/CooldownUI" unique_id=1140473963]
+one_shot = true
+
+[node name="MatchTimerUI" type="Control" parent="HUD" unique_id=1251132246 node_paths=PackedStringArray("player")]
+process_mode = 3
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("7_arp6w")
+player = NodePath("../../WormPlayer")
+
+[node name="TimerLabel" type="Label" parent="HUD/MatchTimerUI" unique_id=1482339615]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -20.0
+offset_right = 20.0
+offset_bottom = 23.0
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 32
+
+[node name="MatchTimer" type="Timer" parent="HUD/MatchTimerUI" unique_id=569704930]
+process_mode = 1
+one_shot = true
+
+[node name="ResultPanel" type="Panel" parent="HUD/MatchTimerUI" unique_id=1134519882]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -160.0
+offset_top = -90.0
+offset_right = 160.0
+offset_bottom = 90.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HUD/MatchTimerUI/ResultPanel" unique_id=340836874]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+
+[node name="ResultLabel" type="Label" parent="HUD/MatchTimerUI/ResultPanel/VBoxContainer" unique_id=1679823648]
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+horizontal_alignment = 1
+
+[node name="RestartButton" type="Button" parent="HUD/MatchTimerUI/ResultPanel/VBoxContainer" unique_id=2108426479]
+layout_mode = 2
+text = "Play Again"
