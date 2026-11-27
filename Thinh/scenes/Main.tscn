@@ -5,6 +5,7 @@
 [ext_resource type="PackedScene" uid="uid://hnbcn7wv62bl" path="res://Thinh/scenes/npc_head.tscn" id="3_kwae5"]
 [ext_resource type="Script" uid="uid://dqacbqi551sm7" path="res://Khoa/scripts/food_spawner.gd" id="4_4s6v7"]
 [ext_resource type="PackedScene" uid="uid://cqcirvddtkyh2" path="res://Khoa/scenes/food.tscn" id="5_nmggo"]
+[ext_resource type="Script" uid="uid://dly07iqrtpx8r" path="res://Thinh/scripts/time/cooldown_ui.gd" id="6_nmggo"]
 [ext_resource type="Script" uid="uid://yk2hu5cexr7" path="res://Thinh/scripts/time/match_timer_ui.gd" id="7_arp6w"]
 
 [node name="Main" type="Node2D" unique_id=765349513]
@@ -16,7 +17,8 @@ player_head = NodePath("../WormPlayer")
 match_timer_ui = NodePath("../HUD/MatchTimerUI")
 spawn_area_size = Vector2(1152, 648)
 
-[node name="WormPlayer" parent="." unique_id=1987967634 instance=ExtResource("3_33jkv")]
+[node name="WormPlayer" parent="." unique_id=1987967634 node_paths=PackedStringArray("cooldown_ui") instance=ExtResource("3_33jkv")]
+cooldown_ui = NodePath("../HUD/CooldownUI")
 move_speed = 200.0
 min_turn_radius = 20.0
 
@@ -41,6 +43,7 @@ offset_top = -24.0
 offset_right = 80.0
 grow_horizontal = 2
 grow_vertical = 0
+script = ExtResource("6_nmggo")
 
 [node name="ProgressBar" type="ProgressBar" parent="HUD/CooldownUI" unique_id=1049351333]
 layout_mode = 1
