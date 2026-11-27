@@ -4,6 +4,9 @@ signal self_collided(segment_index: int)
 signal health_changed(current_health: int, max_health: int)
 signal died(reason: String)
 
+@export var shoot_cooldown: float = 1.5
+@export var cooldown_ui: Control # Drag your CooldownUI node here in the Inspector
+
 # tự va chạm
 @export var self_collision_enabled: bool = true
 @export var safe_segments: int = 2
@@ -254,10 +257,16 @@ func _unhandled_input(event: InputEvent) -> void:
 
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
+			if cooldown_ui and not cooldown_ui.is_ready():
+				return
+
 			weapon_muzzle.call(
 				"shoot_towards",
 				get_global_mouse_position()
 			)
+
+			if cooldown_ui:
+				cooldown_ui.start_cooldown(shoot_cooldown)
 
 func take_damage(
 	amount: int,
