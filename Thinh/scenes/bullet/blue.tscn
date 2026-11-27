@@ -7,11 +7,11 @@
 size = Vector2(24, 12)
 
 [node name="Blue" type="CharacterBody2D" unique_id=1967039530]
+script = ExtResource("2_knf61")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=54766388]
 texture_filter = 1
 texture = ExtResource("1_rawwr")
-script = ExtResource("2_knf61")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=278866861]
 visible = false
