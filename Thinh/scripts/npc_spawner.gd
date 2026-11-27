@@ -24,17 +24,15 @@ func _ready() -> void:
 	else:
 		push_error("NPCSpawner: Could not find MatchTimerUI!")
 
-func _on_wave_triggered(wave_index: int, total_waves: int, intelligence: float) -> void:
-	# Upgrade intelligence of all currently alive NPCs
-	for child in get_children():
-		if child.has_method("set_intelligence"):
-			child.set_intelligence(intelligence)
-
-	# Spawn new NPCs for this wave
+func _on_wave_triggered(wave_index: int, total_waves: int, ai_tier: int) -> void:
 	var count := _calculate_wave_count(wave_index, total_waves)
 	for i in range(count):
-		spawn_npc(intelligence)
+		spawn_npc(ai_tier)
 		_spawned_so_far += 1
+
+	if _alive_npcs == 0 and _spawned_so_far >= total_npcs:
+		if is_instance_valid(match_timer_ui) and match_timer_ui.has_method("win_game"):
+			match_timer_ui.win_game("ENEMIES CLEARED!")
 
 func _calculate_wave_count(wave_index: int, total_waves: int) -> int:
 	if _spawned_so_far >= total_npcs:
@@ -48,7 +46,7 @@ func _calculate_wave_count(wave_index: int, total_waves: int) -> int:
 	var count := int(round(float(total_npcs) * (wave_weight / weight_sum)))
 	return clampi(count, 0, total_npcs - _spawned_so_far)
 
-func spawn_npc(intelligence: float = 0.0) -> void:
+func spawn_npc(ai_tier: int = 0) -> void:
 	var npc_head = npc_head_scene.instantiate()
 	npc_head.global_position = _get_safe_spawn_position()
 	npc_head.rotation = randf_range(0, TAU)
@@ -56,8 +54,8 @@ func spawn_npc(intelligence: float = 0.0) -> void:
 	var actual_head = player_head.get_node_or_null("%Head")
 	npc_head.player_head = actual_head if actual_head else player_head
 
-	if npc_head.has_method("set_intelligence"):
-		npc_head.set_intelligence(intelligence)
+	if npc_head.has_method("set_ai_tier"):
+		npc_head.set_ai_tier(ai_tier)
 
 	_alive_npcs += 1
 	npc_head.tree_exited.connect(_on_npc_removed)
@@ -69,9 +67,13 @@ func _on_npc_removed() -> void:
 
 	_alive_npcs = maxi(0, _alive_npcs - 1)
 
-	# All NPCs cleared: immediately start the next wave
 	if _alive_npcs == 0 and is_instance_valid(match_timer_ui) and not get_tree().paused:
-		match_timer_ui.trigger_next_wave()
+		if _spawned_so_far >= total_npcs:
+			# No more NPCs left to spawn: player wins
+			match_timer_ui.win_game("ENEMIES CLEARED!")
+		else:
+			# Still have waves left: spawn next wave early
+			match_timer_ui.trigger_next_wave()
 
 func _get_safe_spawn_position() -> Vector2:
 	var half_size = spawn_area_size / 2.0
