@@ -5,20 +5,20 @@ use godot::{
     classes::{class_macros::private::virtuals::Xrvrs::Gd, CharacterBody2D, INode, Node},
     register::{godot_api, GodotClass},
 };
-use rand::Rng;
-
 use godot::classes::{Area2D, IArea2D};
 use godot::prelude::*;
 
 #[derive(GodotClass)]
 #[class(base=Area2D)]
-struct Booster {
+pub struct Booster {
+    #[export]
+    shield_scene: Option<Gd<PackedScene>>,
     effect: Effect,
     base: Base<Area2D>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
-enum Effect {
+pub enum Effect {
     #[default]
     Blind,
     Reload,
@@ -31,6 +31,7 @@ enum Effect {
 impl IArea2D for Booster {
     fn init(base: Base<Area2D>) -> Self {
         Self {
+            shield_scene: None,
             effect: Effect::default(),
             base,
         }
@@ -41,44 +42,77 @@ impl IArea2D for Booster {
 impl Booster {
     #[func]
     fn apply_effect(&mut self, mut target: Gd<CharacterBody2D>) {
-        self.effect = Effect::random();
-
         match self.effect {
             Effect::Blind => {
                 godot_print!("Blind effect applied!");
             }
 
             Effect::Immortal => {
+                //immortal take the player and make the unable to die in a certain amount of time, this is a placeholder for the immortal effect
+                //the effect will take the health for player add a ton of health then decrease with speed and return it to max health
+                const SHIELD_SECONDS: f64 = 5.0;
+
+                if let Some(mut existing) = target.get_node_or_null("Shield") {
+                    existing.call("refresh_duration", &[SHIELD_SECONDS.to_variant()]);
+                } else {
+                    let Some(scene) = self.shield_scene.as_ref() else {
+                        return;
+                    };
+                    let Some(mut shield) = scene.try_instantiate_as::<Area2D>() else {
+                        godot_error!("Could not instantiate shield scene");
+                        return;
+                    };
+                    shield.set_name("Shield");
+                    target.add_child(&shield.clone().upcast::<Node>());
+                    shield.set_position(Vector2::ZERO);
+                    shield.call("refresh_duration", &[SHIELD_SECONDS.to_variant()]);
+                }
                 godot_print!("Immortal effect applied!");
             }
 
             Effect::Reload => {
+                //will never be implemented, but this is a placeholder for the reload effect
                 godot_print!("Reload effect applied!");
             }
 
             Effect::Slow => {
                 let speed = target.get("move_speed").to::<f64>();
                 target.set("move_speed", &(speed * 0.5).to_variant());
+                godot_print!("Slow effect applied!");
             }
 
             Effect::Speed => {
                 let speed = target.get("move_speed").to::<f64>();
                 target.set("move_speed", &(speed * 1.5).to_variant());
+                godot_print!("Speed effect applied!");
             }
         }
+    }
+
+    #[func]
+    fn set_effect(&mut self, effect_id: i64) {
+        self.effect = match effect_id {
+            0 => Effect::Blind,
+            1 => Effect::Reload,
+            2 => Effect::Speed,
+            3 => Effect::Slow,
+            4 => Effect::Immortal,
+            _ => {
+                godot_error!("Booster received unknown effect ID: {effect_id}");
+                return;
+            }
+        };
     }
 }
 
 impl Effect {
-    fn random() -> Self {
-        let number = rand::thread_rng().gen_range(0..5);
-
-        [
-            Effect::Blind,
-            Effect::Reload,
-            Effect::Speed,
-            Effect::Slow,
-            Effect::Immortal,
-        ][number]
+    pub(crate) fn id(self) -> i64 {
+        match self {
+            Effect::Blind => 0,
+            Effect::Reload => 1,
+            Effect::Speed => 2,
+            Effect::Slow => 3,
+            Effect::Immortal => 4,
+        }
     }
 }

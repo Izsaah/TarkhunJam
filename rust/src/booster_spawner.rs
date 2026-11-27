@@ -1,5 +1,7 @@
+use crate::booster::Effect;
 use godot::classes::*;
 use godot::prelude::*;
+use rand::seq::SliceRandom;
 use rand::Rng;
 use std::f64::consts::TAU;
 use std::time::Duration;
@@ -10,6 +12,7 @@ struct BoosterSpawner {
     init_delay: Duration,
     timer_to_spawn: Duration,
     spawn_interval: Duration,
+    effect_bag: EffectBag,
     base: Base<Node2D>,
     #[export]
     booster_scene: Option<Gd<PackedScene>>,
@@ -25,6 +28,7 @@ impl INode2D for BoosterSpawner {
             init_delay: Duration::from_secs(10),
             timer_to_spawn: Duration::from_secs(10),
             spawn_interval: Duration::from_secs(5),
+            effect_bag: EffectBag::default(),
             base,
             booster_scene: None,
             player: None,
@@ -54,7 +58,9 @@ impl INode2D for BoosterSpawner {
                     return;
                 };
                 self.timer_to_spawn = self.spawn_interval;
-                //spawn booster
+                let effect = self.effect_bag.next();
+                pickup.call("set_effect", &[effect.id().to_variant()]);
+
                 let mut rng = rand::thread_rng();
                 let angle = rng.gen_range(0_f32..=TAU as f32);
                 let distance = rng.gen_range(0_f32..1_f32).sqrt() * self.spawn_radius;
@@ -66,5 +72,27 @@ impl INode2D for BoosterSpawner {
                 pickup.set_global_position(spawn_position);
             }
         }
+    }
+}
+
+#[derive(Default)]
+pub struct EffectBag {
+    effect_bag: Vec<Effect>,
+}
+
+impl EffectBag {
+    fn next(&mut self) -> Effect {
+        if self.effect_bag.is_empty() {
+            self.effect_bag = vec![
+                Effect::Blind,
+                Effect::Reload,
+                Effect::Speed,
+                Effect::Slow,
+                Effect::Immortal,
+            ];
+            let mut rng = rand::thread_rng();
+            self.effect_bag.shuffle(&mut rng);
+        }
+        self.effect_bag.pop().expect("bag")
     }
 }

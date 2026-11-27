@@ -6,3 +6,4 @@ struct MyExtension;
 unsafe impl ExtensionLibrary for MyExtension {}
 mod booster;
 mod booster_spawner;
+mod shield;
