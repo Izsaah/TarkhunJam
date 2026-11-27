@@ -16,6 +16,7 @@ npc_head_scene = ExtResource("3_kwae5")
 player_head = NodePath("../WormPlayer")
 player = NodePath("../WormPlayer")
 spawn_area_size = Vector2(1152, 648)
+min_dist_from_player = 100.0
 
 [node name="FoodSpawner" type="Node2D" parent="." unique_id=574248500 node_paths=PackedStringArray("worm")]
 script = ExtResource("4_4s6v7")
