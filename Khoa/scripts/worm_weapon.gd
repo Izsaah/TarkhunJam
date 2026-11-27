@@ -4,7 +4,7 @@ signal ammo_changed(current_ammo: int)
 
 @export var bullet_scene: PackedScene
 
-@export var bullet_damage: int = 20
+@export var bullet_damage: int = 1
 @export var bullet_count: int = 20
 @export var bullet_speed: float = 500.0
 
