@@ -91,7 +91,7 @@ func _update_move_direction(delta: float) -> void:
 	var target_angle := mouse_vector.angle()
 	var current_angle := move_direction.angle()
 
-	var angle_difference := wrapf(
+	var target_angle_delta := wrapf(
 		target_angle - current_angle,
 		-PI,
 		PI
@@ -101,7 +101,7 @@ func _update_move_direction(delta: float) -> void:
 	var max_angle_change := (move_speed / safe_radius) * delta
 
 	var angle_change := clampf(
-		angle_difference,
+		target_angle_delta,
 		-max_angle_change,
 		max_angle_change
 	)
