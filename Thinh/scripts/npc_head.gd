@@ -2,7 +2,7 @@ extends CharacterBody2D
 
 const _bodyPartScene = preload("res://Thinh/scenes/body.tscn")
 const _tailPartScene = preload("res://Thinh/scenes/tail.tscn")
-const _bodyDistance: int = 5
+const _bodyDistance: float = 5.5
 
 # 7 Bullet types
 const BULLET_SCENES = [
@@ -211,7 +211,7 @@ func set_ai_tier(tier: int) -> void:
 
 	match ai_tier:
 		AITier.DUMB:
-			base_speed = 145.0
+			base_speed = 135.0
 			boost_speed = 200.0
 			turn_speed = 3.5
 			lead_distance = 60.0
@@ -361,28 +361,28 @@ func _get_cutoff_position() -> Vector2:
 
 	return intercept_point + player_dir.orthogonal() * (-side * 50.0)
 
-# func take_damage(_amount: int, instant_kill: bool = false, source: Node = null) -> void:
-# 	if _is_dead or source == self:
-# 		return
+func take_damage(_amount: int, instant_kill: bool = false, source: Node = null) -> void:
+	if _is_dead or source == self:
+		return
 
-# 	if instant_kill:
-# 		die()
-# 		return
+	if instant_kill:
+		die()
+		return
 
-# 	_remove_body_part()
+	_remove_body_part()
 
-# func _remove_body_part() -> void:
-# 	# Index 0 is the tail; if only the tail (or nothing) is left, the NPC dies
-# 	if _bodyParts.size() <= 1:
-# 		die()
-# 		return
+func _remove_body_part() -> void:
+	# Index 0 is the tail; if only the tail (or nothing) is left, the NPC dies
+	if _bodyParts.size() <= 1:
+		die()
+		return
 
-# 	var removed_part = _bodyParts.pop_back()
-# 	if is_instance_valid(removed_part):
-# 		removed_part.queue_free()
+	var removed_part = _bodyParts.pop_back()
+	if is_instance_valid(removed_part):
+		removed_part.queue_free()
 
-# 	_bodyPartCount = maxi(1, _bodyPartCount - 1)
-# 	_movementHistory = (_bodyPartCount + 2) * _bodyDistance
+	_bodyPartCount = maxi(1, _bodyPartCount - 1)
+	_movementHistory = (_bodyPartCount + 2) * _bodyDistance
 
 func _get_avoidance_direction() -> Vector2:
 	var space_state = get_world_2d().direct_space_state

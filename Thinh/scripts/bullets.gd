@@ -1,8 +1,9 @@
 extends CharacterBody2D
 
-@export var speed: float = 900.0
+@export var speed: float = 300.0
 @export var max_lifetime: float = 3.0
 @export var hit_radius: float = 18.0
+@export var bullet_color: String = ""
 
 var is_one_shot: bool = false
 var _time_alive: float = 0.0
@@ -10,6 +11,10 @@ var _player: Node = null
 
 func _ready():
 	_player = get_tree().root.find_child("WormPlayer", true, false)
+	
+	# Automatically detect color from scene filename (e.g. red.tscn -> "red")
+	if bullet_color.is_empty():
+		bullet_color = scene_file_path.get_file().get_basename().to_lower()
 
 func _physics_process(delta: float):
 	_time_alive += delta
@@ -17,7 +22,6 @@ func _physics_process(delta: float):
 		queue_free()
 		return
 
-	# Move forward in the direction it was rotated
 	var move_vector = Vector2.RIGHT.rotated(global_rotation) * speed * delta
 	var collision = move_and_collide(move_vector)
 
@@ -42,7 +46,6 @@ func _check_player_body() -> bool:
 		if not is_instance_valid(_player):
 			return false
 
-	# Check body segments
 	if "body_parts" in _player:
 		for part in _player.body_parts:
 			if is_instance_valid(part) and global_position.distance_to(part.global_position) <= hit_radius:
@@ -54,6 +57,10 @@ func _check_player_body() -> bool:
 func _handle_hit(target: Node):
 	var player = _find_worm_player(target)
 	if not player:
+		return
+
+	# Immune if player color matches bullet color
+	if "current_color" in player and player.current_color.to_lower() == bullet_color.to_lower():
 		return
 
 	# 1% Chance: Instant kill
