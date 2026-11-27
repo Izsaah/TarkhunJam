@@ -15,6 +15,7 @@ const BULLET_SCENES = [
 	preload("res://Thinh/scenes/bullet/orange.tscn")
 ]
 
+
 # Shooting Settings
 @export var shoot_interval_min: float = 1.8
 @export var shoot_interval_max: float = 3.5
@@ -38,6 +39,13 @@ const BULLET_SCENES = [
 # Collision Radii
 const HEAD_COLLISION_RADIUS: float = 23.0
 const BODY_COLLISION_RADIUS: float = 18.0
+
+enum AITier { DUMB, NORMAL, SMART }
+
+var ai_tier: AITier = AITier.DUMB
+var _aim_lead_factor: float = 0.0
+var _body_avoid_radius: float = 0.0
+var _body_avoid_weight: float = 0.0
 
 var _bodyPartCount: int
 var _scaleY: float = 0.8
@@ -101,20 +109,20 @@ func _process_shooting(delta: float):
 			_fire_bullet()
 
 func _fire_bullet():
-	# Pick 1 of 7 bullets randomly
 	var bullet_scene: PackedScene = BULLET_SCENES.pick_random()
 	var bullet = bullet_scene.instantiate()
 
-	# 10% chance to one-shot
 	var is_fatal: bool = randf() < one_shot_chance
 	bullet.set("is_one_shot", is_fatal)
 
-	# Spawn in front of the head and aim towards the player
-	var shoot_dir = (player_head.global_position - global_position).normalized()
+	var dist = global_position.distance_to(player_head.global_position)
+	var travel_time = dist / 900.0
+	var predicted_pos = player_head.global_position + (_player_velocity * travel_time * _aim_lead_factor)
+
+	var shoot_dir = (predicted_pos - global_position).normalized()
 	bullet.global_position = global_position + shoot_dir * 28.0
 	bullet.global_rotation = shoot_dir.angle()
 
-	# Add to main scene root so bullet travels freely
 	get_tree().current_scene.add_child(bullet)
 
 # --- EATING & GROWING ---
@@ -198,10 +206,58 @@ func _check_all_collisions():
 			_kill_player()
 			return
 
+func set_ai_tier(tier: int) -> void:
+	ai_tier = clampi(tier, AITier.DUMB, AITier.SMART) as AITier
+
+	match ai_tier:
+		AITier.DUMB:
+			base_speed = 145.0
+			boost_speed = 200.0
+			turn_speed = 3.5
+			lead_distance = 60.0
+			attack_range = 240.0
+			avoid_distance = 60.0
+			shoot_interval_min = 2.6
+			shoot_interval_max = 4.2
+			shoot_range = 480.0
+			_aim_lead_factor = 0.0      # Aims directly at player
+			_body_avoid_radius = 0.0    # Blind to player body
+			_body_avoid_weight = 0.0
+
+		AITier.NORMAL:
+			base_speed = 175.0
+			boost_speed = 260.0
+			turn_speed = 5.5
+			lead_distance = 130.0
+			attack_range = 320.0
+			avoid_distance = 100.0
+			shoot_interval_min = 1.7
+			shoot_interval_max = 3.0
+			shoot_range = 600.0
+			_aim_lead_factor = 0.5      # Half predictive aim
+			_body_avoid_radius = 85.0   # Dodges player body
+			_body_avoid_weight = 1.5
+
+		AITier.SMART:
+			base_speed = 215.0
+			boost_speed = 310.0
+			turn_speed = 8.5
+			lead_distance = 185.0
+			attack_range = 420.0
+			avoid_distance = 140.0
+			shoot_interval_min = 0.9
+			shoot_interval_max = 1.8
+			shoot_range = 750.0
+			_aim_lead_factor = 1.0      # Full predictive aim
+			_body_avoid_radius = 140.0  # Strong dodge around player body
+			_body_avoid_weight = 2.8
+
 func _kill_player():
 	if not is_instance_valid(player_head):
 		return
-	if player_head.has_method("die"):
+	if player_head.has_method("take_damage"):
+		player_head.take_damage(0, true, self)
+	elif player_head.has_method("die"):
 		player_head.die()
 	else:
 		player_head.queue_free()
@@ -310,6 +366,7 @@ func _get_avoidance_direction() -> Vector2:
 	var ray_angles = [-1.05, -0.52, 0.0, 0.52, 1.05]
 	var avoid_vector = Vector2.ZERO
 
+	# 1. Wall / physics obstacle avoidance
 	for angle_offset in ray_angles:
 		var ray_dir = Vector2.RIGHT.rotated(rotation + angle_offset)
 		var query = PhysicsRayQueryParameters2D.create(
@@ -324,5 +381,25 @@ func _get_avoidance_direction() -> Vector2:
 		if result:
 			var weight = 1.0 - (global_position.distance_to(result.position) / avoid_distance)
 			avoid_vector -= ray_dir * weight
+
+	# 2. Player body & tail avoidance (Normal and Smart only)
+	if _body_avoid_radius > 0.0 and is_instance_valid(player_head):
+		var forward := Vector2.RIGHT.rotated(rotation)
+		var hazards: Array = []
+
+		if "body_parts" in player_head:
+			hazards.append_array(player_head.body_parts)
+		if "tail_pivot" in player_head and is_instance_valid(player_head.tail_pivot):
+			hazards.append(player_head.tail_pivot)
+
+		for part in hazards:
+			if not is_instance_valid(part):
+				continue
+			var to_part: Vector2 = part.global_position - global_position
+			var dist := to_part.length()
+
+			if dist > 0.0 and dist < _body_avoid_radius and forward.dot(to_part.normalized()) > -0.2:
+				var weight := (1.0 - (dist / _body_avoid_radius)) * _body_avoid_weight
+				avoid_vector -= to_part.normalized() * weight
 
 	return avoid_vector.normalized()

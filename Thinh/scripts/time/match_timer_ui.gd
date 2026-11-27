@@ -2,6 +2,8 @@ extends Control
 
 signal wave_triggered(wave_index: int, total_waves: int, intelligence: float)
 
+@export_range(0.0, 1.0) var normal_tier_start: float = 0.4 # Normal starts at 40% of waves
+@export_range(0.0, 1.0) var smart_tier_start: float = 0.8  # Smart starts at 80% of waves
 @export var match_duration_seconds: float = 300.0
 @export var wave_interval_seconds: float = 60.0
 @export var player: Node = null
@@ -57,13 +59,25 @@ func trigger_next_wave() -> void:
 
 	_last_wave_index += 1
 	_wave_elapsed = 0.0
-	var intelligence := 1.0 if _total_waves <= 1 else clampf(float(_last_wave_index) / float(_total_waves - 1), 0.0, 1.0)
-	wave_triggered.emit(_last_wave_index, _total_waves, intelligence)
+
+	var progress := float(_last_wave_index) / float(_total_waves)
+	var ai_tier: int = 0 # Dumb
+	if progress >= smart_tier_start:
+		ai_tier = 2 # Smart
+	elif progress >= normal_tier_start:
+		ai_tier = 1 # Normal
+
+	wave_triggered.emit(_last_wave_index, _total_waves, ai_tier)
 
 func _on_match_timer_timeout() -> void:
 	if _game_over:
 		return
 	_end_game(true, "YOU SURVIVED!")
+
+func win_game(message: String = "YOU WIN!") -> void:
+	if _game_over:
+		return
+	_end_game(true, message)
 
 func _on_player_died(_reason: String) -> void:
 	if _game_over:
