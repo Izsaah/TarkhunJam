@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://fvyxqwtvfjl3"]
 
 [ext_resource type="Script" uid="uid://d00f3pn86r8py" path="res://Long/scripts/booster.gd" id="1_8g2xl"]
+[ext_resource type="PackedScene" uid="uid://crjpsl1uqyu8r" path="res://Long/scenes/Shield.tscn" id="1_y20wh"]
 [ext_resource type="Texture2D" uid="uid://dhynwxheb6q12" path="res://Long/assests/Sprite-0001.png" id="2_8g2xl"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_2r6lj"]
@@ -183,6 +184,7 @@ animations = [{
 }]
 
 [node name="Booster" type="Booster" unique_id=1477231002]
+shield_scene = ExtResource("1_y20wh")
 script = ExtResource("1_8g2xl")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=55273713]

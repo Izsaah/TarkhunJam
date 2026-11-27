@@ -4,6 +4,8 @@
 [ext_resource type="Script" uid="uid://dqacbqi551sm7" path="res://Khoa/scripts/food_spawner.gd" id="2_h4q4c"]
 [ext_resource type="PackedScene" uid="uid://cqcirvddtkyh2" path="res://Khoa/scenes/food.tscn" id="3_j1sx7"]
 [ext_resource type="PackedScene" uid="uid://fvyxqwtvfjl3" path="res://Long/scenes/booster.tscn" id="4_4e7ws"]
+[ext_resource type="Script" uid="uid://cw078tlxxllm3" path="res://Thinh/scripts/npc_spawner.gd" id="5_gu3q7"]
+[ext_resource type="PackedScene" uid="uid://hnbcn7wv62bl" path="res://Thinh/scenes/npc_head.tscn" id="6_b5hyl"]
 
 [node name="WormTest" type="Node2D" unique_id=575522933]
 
@@ -19,3 +21,10 @@ worm = NodePath("../WormPlayer")
 [node name="BoosterSpawner" type="BoosterSpawner" parent="." unique_id=1471774190 node_paths=PackedStringArray("player")]
 booster_scene = ExtResource("4_4e7ws")
 player = NodePath("../WormPlayer")
+
+[node name="NpcSpawner" type="Node2D" parent="." unique_id=1003284428 node_paths=PackedStringArray("player_head", "match_timer_ui") groups=["Body", "Head", "Tail"]]
+script = ExtResource("5_gu3q7")
+npc_head_scene = ExtResource("6_b5hyl")
+player_head = NodePath("../WormPlayer")
+match_timer_ui = NodePath("")
+spawn_area_size = Vector2(1152, 648)
