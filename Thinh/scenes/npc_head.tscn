@@ -8,7 +8,8 @@ radius = 12.0
 
 [node name="Npc" type="CharacterBody2D" unique_id=121522573 groups=["Body", "Tail"]]
 script = ExtResource("1_6vqdu")
-base_speed = 150.0
+base_speed = 0.0
+boost_speed = 0.0
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=310144800]
 texture_filter = 1
