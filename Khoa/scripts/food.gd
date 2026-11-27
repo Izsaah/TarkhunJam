@@ -20,7 +20,7 @@ func _on_body_entered(body: Node2D) -> void:
 
 	consumed = true
 
-	body.call("grow_worm", growth_amount)
+	body.call_deferred("grow_worm", growth_amount)
 
 	eaten.emit(self)
 	print("Food consumed!")
