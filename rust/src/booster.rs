@@ -8,7 +8,7 @@ use godot::{
     register::{godot_api, GodotClass},
 };
 
-use crate::booster::Effect::Immortal;
+use crate::booster::Effect::Reload;
 
 #[derive(GodotClass)]
 #[class(base=Area2D)]
@@ -44,8 +44,9 @@ impl IArea2D for Booster {
 impl Booster {
     #[func]
     fn apply_effect(&mut self, mut target: Gd<CharacterBody2D>) {
-        match Immortal {
+        match Reload {
             Effect::Blind => {
+                // i have no idea how to implement this, so for now we just ignore it
                 godot_print!("Blind effect applied!");
             }
 
@@ -75,8 +76,14 @@ impl Booster {
             }
 
             Effect::Reload => {
-                //will never be implemented, but this is a placeholder for the reload effect
-                godot_print!("Reload effect applied!");
+                const RELOAD_AMMO: i64 = 20;
+
+                if let Some(mut weapon) = target.get_node_or_null("HeadPivot/WeaponMuzzle") {
+                    weapon.call("add_ammo", &[RELOAD_AMMO.to_variant()]);
+                    godot_print!("Reload effect applied: added {RELOAD_AMMO} ammo.");
+                } else {
+                    godot_error!("Could not find the player's weapon to reload");
+                }
             }
 
             Effect::Slow => {
