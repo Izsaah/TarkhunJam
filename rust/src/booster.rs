@@ -44,7 +44,7 @@ impl IArea2D for Booster {
 impl Booster {
     #[func]
     fn apply_effect(&mut self, mut target: Gd<CharacterBody2D>) {
-        match Reload {
+        match self.effect {
             Effect::Blind => {
                 // i have no idea how to implement this, so for now we just ignore it
                 godot_print!("Blind effect applied!");
