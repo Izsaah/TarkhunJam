@@ -17,12 +17,20 @@ impl IArea2D for Shield {
         self.timer -= delta;
         if self.timer <= 0.0 {
             self.base_mut().queue_free();
+            return;
+        }
+
+        for mut body in self.base().get_overlapping_bodies().iter_shared() {
+            if body.has_method("_check_player_body") {
+                body.queue_free();
+            }
         }
     }
 }
 
 #[godot_api]
 impl Shield {
+    // will considered implemented in the future, but for now, we just ignore it
     #[func]
     fn take_damage(&mut self, _damage: i64, _instant_kill: bool, _source: Option<Gd<Node>>) {}
 
