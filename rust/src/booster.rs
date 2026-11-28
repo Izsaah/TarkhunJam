@@ -1,12 +1,14 @@
 use std::default;
 
+use godot::classes::{Area2D, IArea2D};
 use godot::meta::ToGodot;
+use godot::prelude::*;
 use godot::{
     classes::{class_macros::private::virtuals::Xrvrs::Gd, CharacterBody2D, INode, Node},
     register::{godot_api, GodotClass},
 };
-use godot::classes::{Area2D, IArea2D};
-use godot::prelude::*;
+
+use crate::booster::Effect::Immortal;
 
 #[derive(GodotClass)]
 #[class(base=Area2D)]
@@ -42,14 +44,12 @@ impl IArea2D for Booster {
 impl Booster {
     #[func]
     fn apply_effect(&mut self, mut target: Gd<CharacterBody2D>) {
-        match self.effect {
+        match Immortal {
             Effect::Blind => {
                 godot_print!("Blind effect applied!");
             }
 
             Effect::Immortal => {
-                //immortal take the player and make the unable to die in a certain amount of time, this is a placeholder for the immortal effect
-                //the effect will take the health for player add a ton of health then decrease with speed and return it to max health
                 const SHIELD_SECONDS: f64 = 5.0;
 
                 if let Some(mut existing) = target.get_node_or_null("Shield") {
@@ -63,9 +63,13 @@ impl Booster {
                         return;
                     };
                     shield.set_name("Shield");
-                    target.add_child(&shield.clone().upcast::<Node>());
+
                     shield.set_position(Vector2::ZERO);
                     shield.call("refresh_duration", &[SHIELD_SECONDS.to_variant()]);
+                    target.call_deferred(
+                        "add_child",
+                        &[shield.clone().upcast::<Node>().to_variant()],
+                    );
                 }
                 godot_print!("Immortal effect applied!");
             }

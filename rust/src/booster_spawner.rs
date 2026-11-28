@@ -10,23 +10,31 @@ use std::time::Duration;
 #[class(base=Node2D)]
 struct BoosterSpawner {
     init_delay: Duration,
+
     timer_to_spawn: Duration,
+
     spawn_interval: Duration,
+
     effect_bag: EffectBag,
+
     base: Base<Node2D>,
+
     #[export]
     booster_scene: Option<Gd<PackedScene>>,
+
     #[export]
     player: Option<Gd<CharacterBody2D>>,
+
     #[export]
     spawn_radius: f32,
 }
+
 #[godot_api]
 impl INode2D for BoosterSpawner {
     fn init(base: Base<Node2D>) -> Self {
         Self {
-            init_delay: Duration::from_secs(10),
-            timer_to_spawn: Duration::from_secs(10),
+            init_delay: Duration::from_secs(5),
+            timer_to_spawn: Duration::from_secs(3),
             spawn_interval: Duration::from_secs(5),
             effect_bag: EffectBag::default(),
             base,

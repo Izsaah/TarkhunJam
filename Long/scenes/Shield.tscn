@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://crjpsl1uqyu8r"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_bg1db"]
-radius = 30.016663
+radius = 118272.164
 
 [node name="Shield" type="Shield" unique_id=376663285]
 

@@ -27,4 +27,5 @@ script = ExtResource("5_gu3q7")
 npc_head_scene = ExtResource("6_b5hyl")
 player_head = NodePath("../WormPlayer")
 player = NodePath("../WormPlayer")
+total_npcs = 20
 spawn_area_size = Vector2(1152, 648)
